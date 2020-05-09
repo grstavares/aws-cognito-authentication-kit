@@ -71,10 +71,10 @@ extension AWSCognitoAuthenticatable {
         guard jwtSigners == nil else { return eventLoopGroup.next().makeSucceededFuture(jwtSigners!)}
 
         let JWTSignersURL = "https://cognito-idp.\(configuration.region.rawValue).amazonaws.com/\(configuration.userPoolId)/.well-known/jwks.json"
-        let httpClient = AsyncHTTPClient.HTTPClient(eventLoopGroupProvider:.shared(eventLoopGroup))
+        let httpClient = configuration.cognitoIDP.client.httpClient
+        let request = AWSHTTPRequest(url: URL(string: JWTSignersURL)!, method: .GET, headers: [:], body: nil)
         return httpClient
-            .get(url: JWTSignersURL, deadline: .now() + TimeAmount.seconds(10))
-            .always { _ in try? httpClient.syncShutdown() }
+            .execute(request: request, timeout: TimeAmount.seconds(10), on: eventLoopGroup.next())
             .flatMapThrowing { response in
                 let signers = JWTSigners()
                 guard let body = response.body else { return JWTSigners() }

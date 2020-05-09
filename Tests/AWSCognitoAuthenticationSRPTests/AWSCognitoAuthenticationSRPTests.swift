@@ -1,6 +1,6 @@
 import XCTest
 import AWSSDKSwiftCore
-import CognitoIdentityProvider
+import AWSCognitoIdentityProvider
 import BigNum
 import Crypto
 import NIO
@@ -30,7 +30,7 @@ public class AWSCognitoContextTest: AWSCognitoContextData {
 
 final class AWSCognitoAuthenticationKitTests: XCTestCase {
     
-    static let cognitoIDP = CognitoIdentityProvider(region: .useast1, /*middlewares: [AWSLoggingMiddleware()], */eventLoopGroupProvider: .shared(MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)))
+    static let cognitoIDP = CognitoIdentityProvider(region: .useast1)
     static let userPoolName: String = "aws-cognito-authentication-tests"
     static let userPoolClientName: String = "aws-cognito-authentication-tests"
     static var authenticatable: AWSCognitoAuthenticatable!
@@ -120,7 +120,7 @@ final class AWSCognitoAuthenticationKitTests: XCTestCase {
     func testAuthenticateSRP() {
         XCTAssertNil(Self.setUpFailure)
         
-        let cognitoIDPUnauthenticated = CognitoIdentityProvider(accessKeyId: "", secretAccessKey: "", region: .useast1, middlewares: [AWSLoggingMiddleware()], eventLoopGroupProvider: .shared(MultiThreadedEventLoopGroup(numberOfThreads: System.coreCount)))
+        let cognitoIDPUnauthenticated = CognitoIdentityProvider(accessKeyId: "", secretAccessKey: "", region: .useast1, middlewares: [AWSLoggingMiddleware()])
         let configuration = AWSCognitoConfiguration(
             userPoolId: Self.authenticatable.configuration.userPoolId,
             clientId: Self.authenticatable.configuration.clientId,
@@ -200,9 +200,9 @@ final class AWSCognitoAuthenticationKitTests: XCTestCase {
         let info = [UInt8]("HKDF key derivation".utf8)
         
         let sha1Result = SRP<Insecure.SHA1>.HKDF(seed: password, info: info, salt: salt, count: Insecure.SHA1.Digest.byteCount)
-        XCTAssertEqual(sha1Result.hexdigest().uppercased(), "9912F20853DFF1AFA944E9B88CA63C410CBB1938")
+        XCTAssertEqual(sha1Result.hexDigest().uppercased(), "9912F20853DFF1AFA944E9B88CA63C410CBB1938")
         let sha256Result = SRP<SHA256>.HKDF(seed: password, info: info, salt: salt, count: 16)
-        XCTAssertEqual(sha256Result.hexdigest().uppercased(), "398F838A6019FC27D99D90009A1FE0BF")
+        XCTAssertEqual(sha256Result.hexDigest().uppercased(), "398F838A6019FC27D99D90009A1FE0BF")
     }
     
     
