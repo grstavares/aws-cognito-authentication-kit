@@ -30,7 +30,8 @@ public class AWSCognitoContextTest: AWSCognitoContextData {
 
 final class AWSCognitoAuthenticationKitTests: XCTestCase {
     
-    static let cognitoIDP = CognitoIdentityProvider(region: .useast1)
+    static let awsClient = AWSClient(httpClientProvider: .createNew)
+    static let cognitoIDP = CognitoIdentityProvider(client: awsClient, region: .useast1)
     static let userPoolName: String = "aws-cognito-authentication-tests"
     static let userPoolClientName: String = "aws-cognito-authentication-tests"
     static var authenticatable: AWSCognitoAuthenticatable!
@@ -120,7 +121,9 @@ final class AWSCognitoAuthenticationKitTests: XCTestCase {
     func testAuthenticateSRP() {
         XCTAssertNil(Self.setUpFailure)
         
-        let cognitoIDPUnauthenticated = CognitoIdentityProvider(accessKeyId: "", secretAccessKey: "", region: .useast1, middlewares: [AWSLoggingMiddleware()])
+        let awsClient = AWSClient(credentialProvider: .empty, middlewares: [AWSLoggingMiddleware()], httpClientProvider: .createNew)
+        defer { XCTAssertNoThrow(try awsClient.syncShutdown()) }
+        let cognitoIDPUnauthenticated = CognitoIdentityProvider(client: awsClient, region: .useast1)
         let configuration = AWSCognitoConfiguration(
             userPoolId: Self.authenticatable.configuration.userPoolId,
             clientId: Self.authenticatable.configuration.clientId,

@@ -30,7 +30,8 @@ class AWSCognitoContextTest: AWSCognitoContextData {
 
 final class AWSCognitoAuthenticationKitTests: XCTestCase {
     
-    static let cognitoIDP = CognitoIdentityProvider(region: .useast1)
+    static let awsClient = AWSClient(httpClientProvider: .createNew)
+    static let cognitoIDP = CognitoIdentityProvider(client: awsClient, region: .useast1)
     static let userPoolName: String = "aws-cognito-authentication-tests"
     static let userPoolClientName: String = "aws-cognito-authentication-tests"
     static var authenticatable: AWSCognitoAuthenticatable!
