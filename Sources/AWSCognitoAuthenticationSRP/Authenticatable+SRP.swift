@@ -121,7 +121,7 @@ class SRP<H: HashFunction> {
             } while A % self.N == BigNum(0)
             
             self.a = a
-            print(a.hex)
+//             print(a.hex)
             self.A = A
         }
     }
